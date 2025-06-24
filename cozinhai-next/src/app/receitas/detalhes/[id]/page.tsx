@@ -39,7 +39,6 @@ export default async function ReceitaPage({ params }: { params: { id: string } }
             height={256}
 
           />
-          <Link href='/receitas' className="strong">{"< Voltar"}</Link>
 
           <h1 className="text-[#22577A] font-bold text-3xl text-center">{data.title}</h1>
 
