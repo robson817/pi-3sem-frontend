@@ -36,7 +36,7 @@ export default function Footer() {
 
       <div>
         <ul className="text-white flex flex-col gap-8 m-2.5 text-[20px]">
-          <a href="#" className="hover:underline">
+          <a href="/" className="hover:underline">
             <li>Início</li>
           </a>
           <a href="" className="hover:underline">
