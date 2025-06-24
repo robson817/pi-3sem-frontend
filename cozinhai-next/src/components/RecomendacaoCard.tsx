@@ -21,7 +21,7 @@ export default function RecomendacaoCard({ image, title, slug }: CardProps) {
       <h2 className="font-semibold text-[#22577A] text-lg md:text-[22px] min-h-[60px] mt-3">
         {title}
       </h2>
-      <Botao texto="Ver Receita" destino={`/receita/${slug}`} />
+      <Botao texto="Ver Receita" destino={`/receitas/detalhes/${slug}`} />
     </div>
   )
 }

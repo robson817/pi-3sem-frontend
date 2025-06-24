@@ -168,7 +168,7 @@ export default function Home() {
               key={idx}
               title={item.title}
               image={item.image}
-              slug={item.title}
+              slug={item.id}
             />
           ))}
 
