@@ -3,7 +3,6 @@ import Image from 'next/image';
 import receitas from './data/receitas';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import styles from '../../styles/home.module.css';
 
 export default function ReceitaPage({ params }: { params: { slug: string } }) {
   const receita = receitas.find(r => r.slug === params.slug);

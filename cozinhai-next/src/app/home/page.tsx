@@ -2,7 +2,6 @@
 
 import Header from "@/components/Header";
 import RecomendacaoCard from "@/components/RecomendacaoCard";
-import styles from "../styles/home.module.css";
 import Footer from "@/components/Footer";
 import { useEffect, useState } from "react";
 import IngredientesDaEpoca from "@/components/ingredientes-da-epoca";

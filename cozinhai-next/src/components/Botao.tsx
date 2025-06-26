@@ -1,6 +1,5 @@
 import Link from "next/link";
 import React from "react";
-import styles from "../app/styles/home.module.css";
 
 interface botaoProps {
   texto: string;

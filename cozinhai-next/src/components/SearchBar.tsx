@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import styles from "@/app/styles/home.module.css";
+import styles from "@/app/styles/";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
