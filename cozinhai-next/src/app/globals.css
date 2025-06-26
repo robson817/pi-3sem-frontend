@@ -9,6 +9,11 @@ body {
   overflow-x: hidden;
 }
 
+input::placeholder {
+  padding: 8px;
+  font-family: "Alexandria", "Arial";
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;

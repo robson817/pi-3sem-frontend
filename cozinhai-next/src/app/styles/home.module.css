@@ -2,11 +2,6 @@
   padding: 4px 8px;
 }
 
-input::placeholder {
-  padding: 8px;
-  font-family: "Alexandria", "Arial";
-}
-
 input:focus {
   outline: none;
 }
