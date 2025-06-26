@@ -4,8 +4,13 @@ import receitas from './data/receitas';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
-export default function ReceitaPage({ params }: { params: { slug: string } }) {
-  const receita = receitas.find(r => r.slug === params.slug);
+interface ReceitaPageProps {
+  params: Promise<{ slug: string }>;
+}
+
+export default async function ReceitaPage({ params }: ReceitaPageProps) {
+  const { slug } = await params;
+  const receita = receitas.find(r => r.slug === slug);
 
   if (!receita) return notFound();
 

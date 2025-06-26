@@ -5,7 +5,6 @@ import RecomendacaoCard from "@/components/RecomendacaoCard";
 import Footer from "@/components/Footer";
 import { useEffect, useState } from "react";
 import IngredientesDaEpoca from "@/components/ingredientes-da-epoca";
-import { apiKey } from "@/app/receitas/page";
 import Image from "next/image";
 import RandomRecommendations from "@/components/RandomRecomendations";
 
@@ -31,7 +30,7 @@ export default function Home() {
       }
 
       fetch(
-        `https://api.spoonacular.com/food/ingredients/autocomplete?apiKey=${apiKey}&query=${inputValue}`
+        `https://api.spoonacular.com/food/ingredients/autocomplete?apiKey=${process.env.NEXT_PUBLIC_SPOONACULAR_API_KEY}&query=${inputValue}`
       )
         .then((res) => res.json())
         .then((data) => {
@@ -71,7 +70,7 @@ export default function Home() {
     const ingredientsInUrl = ingredients.join(",+");
     try {
       const response = await fetch(
-        `https://api.spoonacular.com/recipes/findByIngredients?apiKey=${apiKey}&ingredients=${ingredientsInUrl}`
+        `https://api.spoonacular.com/recipes/findByIngredients?apiKey=${process.env.NEXT_PUBLIC_SPOONACULAR_API_KEY}&ingredients=${ingredientsInUrl}`
       );
       const data = await response.json();
       // data is an array of recipes, each with a 'title' property
