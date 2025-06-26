@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useMemo } from 'react' // Importe useMemo
+import { useEffect, useState, useMemo } from 'react'
 import { useAuth } from '@/components/auth/auth-context'
 import Image from 'next/image'
 import Header from '@/components/Header'
@@ -45,7 +45,7 @@ const StarsEdit = ({
   </div>
 )
 
-// Estrelas de leitura (ESTE ESTAVA FALTANDO!)
+// Estrelas de leitura
 const Stars = ({ grade = 0 }: { grade?: number }) => (
   <div className="flex gap-1 text-yellow-500">
     {[1, 2, 3, 4, 5].map((i) => (
@@ -58,10 +58,9 @@ const Stars = ({ grade = 0 }: { grade?: number }) => (
   </div>
 )
 
-// Adicionei 'async' novamente aqui para tentar evitar o erro de terminal,
-// mas o foco principal é a lógica do useMemo e console.logs
+// Corrigido: Remova 'async' da função ReceitaPage
 export default function ReceitaPage({ params }: { params: { id: string } }) {
-  const idReceita = params.id
+  const idReceita = params.id // Esta linha agora deve funcionar sem erro
   const { user, isAuthenticated } = useAuth()
   const [data, setData] = useState<RecipeData | null>(null)
 
@@ -69,7 +68,7 @@ export default function ReceitaPage({ params }: { params: { id: string } }) {
     grade: number
     comment: string
     title?: string
-    userId: string; // GARANTIR QUE userId ESTÁ NA INTERFACE
+    userId: string;
   }
 
   const [reviews, setReviews] = useState<Review[]>([])
@@ -78,7 +77,6 @@ export default function ReceitaPage({ params }: { params: { id: string } }) {
   const [isLoading, setIsLoading] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  // ESTE BLOCO ESTAVA FALTANDO NO SEU CÓDIGO!
   const hasUserReviewed = useMemo(() => {
     if (!isAuthenticated || !user || !reviews.length) {
       console.log('hasUserReviewed: Pre-check failed (not auth, no user, or no reviews)');
@@ -86,12 +84,12 @@ export default function ReceitaPage({ params }: { params: { id: string } }) {
     }
     const reviewed = reviews.some(review => review.userId === user.id);
     console.log('--- Debugging hasUserReviewed ---');
-    console.log('Current User ID (from useAuth):', user?.id); // Adicionado '?' para segurança
+    console.log('Current User ID (from useAuth):', user.id);
     console.log('Reviews fetched from backend:', reviews);
     console.log('Does any review match current user ID (hasUserReviewed)?', reviewed);
     console.log('---------------------------------');
     return reviewed;
-  }, [isAuthenticated, user, reviews]); // Dependências corretas
+  }, [isAuthenticated, user, reviews]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -115,7 +113,7 @@ export default function ReceitaPage({ params }: { params: { id: string } }) {
             },
           }
         )
-        console.log('API Response for Reviews:', reviewRes.data); // LOG CRÍTICO AQUI
+        console.log('API Response for Reviews:', reviewRes.data);
         setReviews(reviewRes.data)
       } catch (error) {
         console.error('Erro ao carregar dados da receita:', error)
@@ -128,7 +126,6 @@ export default function ReceitaPage({ params }: { params: { id: string } }) {
   }, [idReceita])
 
   const handleSubmit = async () => {
-    // AQUI ESTAVA FALTANDO A VERIFICAÇÃO hasUserReviewed
     if (!user || hasUserReviewed) {
       console.log('Submit prevented: User not authenticated or already reviewed.');
       return;
@@ -138,11 +135,10 @@ export default function ReceitaPage({ params }: { params: { id: string } }) {
       const token = localStorage.getItem('token')
       await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/user/${user.id}/${idReceita}/reviews`,
-        { grade, comment, title: data?.title, recipeImage: data?.image }, // Garanta que title e recipeImage são enviados se o backend esperar
+        { grade, comment, title: data?.title, recipeImage: data?.image },
         { headers: { Authorization: `Bearer ${token}` } }
       )
 
-      // Atualiza o estado de reviews para incluir a nova avaliação do usuário
       setReviews((prevReviews) => {
         const existingReviewIndex = prevReviews.findIndex(
           (rev) => rev.userId === user.id
@@ -152,9 +148,7 @@ export default function ReceitaPage({ params }: { params: { id: string } }) {
           grade,
           comment,
           title: data ? data.title : undefined,
-          userId: user.id, // FUNDAMENTAL: Incluir userId na review adicionada
-          // Se o backend retornar 'date', adicione-o aqui também para consistência
-          // date: new Date().toISOString(),
+          userId: user.id,
         };
 
         if (existingReviewIndex > -1) {
@@ -236,15 +230,14 @@ export default function ReceitaPage({ params }: { params: { id: string } }) {
                 <li key={i} className="border-b border-gray-200 pb-2">
                   <p className="text-[#22577A] font-medium">Nota: {rev.grade}/5</p>
                   <p className="text-[#22577A]">{rev.comment}</p>
-                  {/* ESTE COMPONENTE ESTAVA FALTANDO */}
                   <Stars grade={rev.grade} />
                 </li>
               ))}
             </ul>
           )}
 
-          {/* RENDERIZA O FORMULÁRIO APENAS SE AUTENTICADO E AINDA NÃO AVALIOU */}
-          {isAuthenticated && !hasUserReviewed ? (
+          {/* Renderiza o formulário de avaliação APENAS se o usuário estiver autenticado E AINDA NÃO AVALIOU */}
+          {isAuthenticated && !hasUserReviewed && (
             <div className="mt-6 space-y-4">
               <h4 className="font-semibold text-[#22577A]">Deixe sua avaliação</h4>
               <label className="text-[#22577A] font-medium">
@@ -265,22 +258,14 @@ export default function ReceitaPage({ params }: { params: { id: string } }) {
                 {isSubmitting ? 'Enviando...' : 'Enviar Avaliação'}
               </button>
             </div>
-          ) : (
-            // Mensagem se o usuário já avaliou OU não está autenticado
-            isAuthenticated && hasUserReviewed && (
-              <p className="mt-6 text-[#22577A] font-medium">
-                Você já avaliou esta receita.{' '}
-                Para editar sua avaliação, acesse <Link href="/avaliacoes" className="text-blue-600 underline hover:text-blue-800">suas avaliações</Link>.
-              </p>
-            )
           )}
-          {/* Se não estiver autenticado e a receita ainda não foi avaliada, não exibe o formulário nem a mensagem de "já avaliou" */}
-          {!isAuthenticated && (
-             <p className="mt-6 text-[#22577A] font-medium">
-                Faça login para avaliar esta receita.
-             </p>
+          {/* Mensagem se o usuário já avaliou - com link para a página de avaliações */}
+          {isAuthenticated && hasUserReviewed && (
+            <p className="mt-6 text-[#22577A] font-medium">
+              Você já avaliou esta receita.{' '}
+              Para editar sua avaliação, acesse <Link href="/avaliacoes" className="text-blue-600 underline hover:text-blue-800">suas avaliações</Link>.
+            </p>
           )}
-
         </div>
       </main>
       <Footer />

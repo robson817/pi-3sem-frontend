@@ -1,4 +1,4 @@
-'use client'; // ✅ this file must be a client component
+'use client';
 
 import { useEffect } from 'react';
 import Header from '@/components/Header';

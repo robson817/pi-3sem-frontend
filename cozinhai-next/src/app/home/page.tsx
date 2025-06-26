@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import IngredientesDaEpoca from "@/components/ingredientes-da-epoca";
 import { apiKey } from "@/app/receitas/page";
 import Image from "next/image";
+import RandomRecommendations from "@/components/RandomRecomendations";
 
 export default function Home() {
   const [inputValue, setInputValue] = useState("");
@@ -172,7 +173,7 @@ export default function Home() {
             />
           ))}
 
-        <h1 className="text-[#22577A] font-bold text-xl sm:text-2xl text-center">
+        {/* <h1 className="text-[#22577A] font-bold text-xl sm:text-2xl text-center">
           Recomendações Diárias
         </h1>
         <div className="flex flex-wrap justify-center gap-4 sm:gap-6">
@@ -191,9 +192,9 @@ export default function Home() {
             title="Bolo de Caneca"
             slug="bolo-de-caneca"
           />
-        </div>
+        </div> */}
 
-        {/* <RandomRecommendations number={3} title="Sugestões do Dia" /> */}
+        <RandomRecommendations number={3} title="Sugestões do Dia" />
 
         <IngredientesDaEpoca />
       </div>
