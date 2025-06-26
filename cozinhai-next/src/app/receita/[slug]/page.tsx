@@ -14,9 +14,11 @@ export default function ReceitaPage({ params }: { params: { slug: string } }) {
       <Header />
 
       <main className="flex flex-col items-center px-6 py-12 gap-8">
-        <img
+        <Image
           src="/images/fullLogo.svg"
           alt="Logo Cozinhaí"
+          width={256}
+          height={96}
           className="w-64 mb-6"
         />
 
