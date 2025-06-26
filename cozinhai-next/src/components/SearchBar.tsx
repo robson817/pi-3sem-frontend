@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 interface CardProps {
@@ -13,7 +12,6 @@ interface CardProps {
 export default function SearchBar({
   placeholder,
   imgURL,
-  searchUrl,
 }: CardProps) {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false)

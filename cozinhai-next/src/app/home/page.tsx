@@ -9,12 +9,19 @@ import { apiKey } from "@/app/receitas/page";
 import Image from "next/image";
 import RandomRecommendations from "@/components/RandomRecomendations";
 
+interface Recipe {
+  id: number;
+  title: string;
+  image: string;
+  // add other properties as needed
+}
+
 export default function Home() {
   const [inputValue, setInputValue] = useState("");
   const [ingredients, setIngredients] = useState<string[]>([]);
   const [suggestions, setSuggestions] = useState<{ name: string }[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [recipes, setRecipes] = useState<any[]>([]);
+  const [recipes, setRecipes] = useState<Recipe[]>([]);
 
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
@@ -40,7 +47,7 @@ export default function Home() {
     return () => clearTimeout(delayDebounce);
   }, [inputValue]);
 
-  const handleSuggestionClick = (value: any) => {
+  const handleSuggestionClick = (value: string) => {
     setInputValue(value);
     setSuggestions([]);
   };
@@ -168,7 +175,7 @@ export default function Home() {
               key={idx}
               title={item.title}
               image={item.image}
-              slug={item.id}
+              slug={item.id.toString()}
             />
           ))}
 

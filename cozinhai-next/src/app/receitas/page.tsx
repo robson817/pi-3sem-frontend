@@ -26,7 +26,8 @@ export default function RecipeResults() {
     if (!query) return;
 
     const fetchRecipes = async () => {
-      setLoading(true), setError(null);
+      setLoading(true);
+      setError(null);
 
       try {
         const response = await fetch(
@@ -41,8 +42,12 @@ export default function RecipeResults() {
 
         const data = await response.json();
         setRecipes(data.results);
-      } catch (err: any) {
-        setError(err.message);
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError("Ocorreu um erro desconhecido.");
+        }
       } finally {
         setLoading(false);
       }
@@ -78,7 +83,7 @@ export default function RecipeResults() {
             className="mb-[1rem] mt-[5rem]"
             style={{ fontSize: "3.246rem", color: "#2EC4B6" }}
           >
-            Resultados para "{query}"
+            Resultados para &quot;{query}&quot;
           </h1>
 
           {loading && <p>Carregando...</p>}
