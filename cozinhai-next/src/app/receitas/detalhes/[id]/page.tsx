@@ -12,191 +12,37 @@ import Link from 'next/link'; // Importe Link do next/link
 interface Ingredient {
   id: number
   amount: number
-  unit: string
-  name: string
 }
 
-interface RecipeData {
-  title: string
-  image: string
-  servings: number
-  readyInMinutes: number
-  extendedIngredients: Ingredient[]
-  instructions: string
-}
+export default async function ReceitaPage({ params }: { params: { id: string } }) {
+  const idReceita = params.id;
+  const chaveApi = "d9e89aa107a2446ea222d9c3004ad5ed"; // ligar no .env
+  const fetchUrl = `https://api.spoonacular.com/recipes/${idReceita}/information?apiKey=${chaveApi}`;
 
-// Estrelas clicáveis para edição
-const StarsEdit = ({
-  grade,
-  onChange,
-}: {
-  grade: number
-  onChange: (grade: number) => void
-}) => (
-  <div className="flex gap-1 text-yellow-500 cursor-pointer select-none">
-    {[1, 2, 3, 4, 5].map((i) => (
-      <Star
-        key={i}
-        size={24}
-        className={i <= grade ? 'fill-current' : 'text-gray-300'}
-        onClick={() => onChange(i)}
-      />
-    ))}
-  </div>
-)
+  const response = await fetch(fetchUrl);
 
-// Estrelas de leitura (ESTE ESTAVA FALTANDO!)
-const Stars = ({ grade = 0 }: { grade?: number }) => (
-  <div className="flex gap-1 text-yellow-500">
-    {[1, 2, 3, 4, 5].map((i) => (
-      <Star
-        key={i}
-        size={18}
-        className={i <= grade ? 'fill-current' : 'text-gray-300'}
-      />
-    ))}
-  </div>
-)
-
-// Adicionei 'async' novamente aqui para tentar evitar o erro de terminal,
-// mas o foco principal é a lógica do useMemo e console.logs
-export default function ReceitaPage({ params }: { params: { id: string } }) {
-  const idReceita = params.id
-  const { user, isAuthenticated } = useAuth()
-  const [data, setData] = useState<RecipeData | null>(null)
-
-  interface Review {
-    grade: number
-    comment: string
-    title?: string
-    userId: string; // GARANTIR QUE userId ESTÁ NA INTERFACE
+  if (!response.ok) {
+    throw new Error("Erro ao buscar as receitas");
   }
 
-  const [reviews, setReviews] = useState<Review[]>([])
-  const [comment, setComment] = useState('')
-  const [grade, setGrade] = useState(3)
-  const [isLoading, setIsLoading] = useState(true)
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const data = await response.json();
 
-  // ESTE BLOCO ESTAVA FALTANDO NO SEU CÓDIGO!
-  const hasUserReviewed = useMemo(() => {
-    if (!isAuthenticated || !user || !reviews.length) {
-      console.log('hasUserReviewed: Pre-check failed (not auth, no user, or no reviews)');
-      return false;
-    }
-    const reviewed = reviews.some(review => review.userId === user.id);
-    console.log('--- Debugging hasUserReviewed ---');
-    console.log('Current User ID (from useAuth):', user?.id); // Adicionado '?' para segurança
-    console.log('Reviews fetched from backend:', reviews);
-    console.log('Does any review match current user ID (hasUserReviewed)?', reviewed);
-    console.log('---------------------------------');
-    return reviewed;
-  }, [isAuthenticated, user, reviews]); // Dependências corretas
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const recipeRes = await axios.get(
-          `https://api.spoonacular.com/recipes/${idReceita}/information`,
-          {
-            params: {
-              apiKey: process.env.NEXT_PUBLIC_SPOONACULAR_API_KEY,
-            },
-          }
-        )
-        setData(recipeRes.data)
-
-        const reviewRes = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL}/recipe/${idReceita}/reviews`,
-          {
-            params: {
-              limit: 10,
-              offset: 0,
-            },
-          }
-        )
-        console.log('API Response for Reviews:', reviewRes.data); // LOG CRÍTICO AQUI
-        setReviews(reviewRes.data)
-      } catch (error) {
-        console.error('Erro ao carregar dados da receita:', error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    fetchData()
-  }, [idReceita])
-
-  const handleSubmit = async () => {
-    // AQUI ESTAVA FALTANDO A VERIFICAÇÃO hasUserReviewed
-    if (!user || hasUserReviewed) {
-      console.log('Submit prevented: User not authenticated or already reviewed.');
-      return;
-    }
-    setIsSubmitting(true)
-    try {
-      const token = localStorage.getItem('token')
-      await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/user/${user.id}/${idReceita}/reviews`,
-        { grade, comment, title: data?.title, recipeImage: data?.image }, // Garanta que title e recipeImage são enviados se o backend esperar
-        { headers: { Authorization: `Bearer ${token}` } }
-      )
-
-      // Atualiza o estado de reviews para incluir a nova avaliação do usuário
-      setReviews((prevReviews) => {
-        const existingReviewIndex = prevReviews.findIndex(
-          (rev) => rev.userId === user.id
-        );
-
-        const newOrUpdatedReview = {
-          grade,
-          comment,
-          title: data ? data.title : undefined,
-          userId: user.id, // FUNDAMENTAL: Incluir userId na review adicionada
-          // Se o backend retornar 'date', adicione-o aqui também para consistência
-          // date: new Date().toISOString(),
-        };
-
-        if (existingReviewIndex > -1) {
-          const updatedReviews = [...prevReviews];
-          updatedReviews[existingReviewIndex] = newOrUpdatedReview;
-          console.log('Reviews state updated (existing):', updatedReviews);
-          return updatedReviews;
-        } else {
-          const newReviews = [...prevReviews, newOrUpdatedReview];
-          console.log('Reviews state updated (new):', newReviews);
-          return newReviews;
-        }
-      });
-
-      setComment('')
-      setGrade(3)
-    } catch (err) {
-      console.error('Erro ao enviar avaliação:', err)
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
-
-  if (isLoading || !data) {
+  if (data) {
     return (
-      <div className="min-h-screen flex justify-center items-center">
-        <p>Carregando receita...</p>
-      </div>
-    )
-  }
+      <div className="bg-white min-h-screen flex flex-col">
+        <Header />
 
-  return (
-    <div className="bg-white min-h-screen flex flex-col">
-      <Header />
-      <main className="flex flex-col items-center px-6 py-12 gap-8">
-        <Image
-          src="/images/fullLogo.svg"
-          alt="Logo Cozinhaí"
-          className="mt-[6rem]"
-          width={256}
-          height={256}
-        />
+        <main className="flex flex-col items-center px-6 py-12 gap-8">
+          <Image
+            src="/images/fullLogo.svg"
+            alt="Logo Cozinhaí"
+            className="mt-[6rem]"
+            width={256}
+            height={256}
+
+          />
+          <Link href='/receitas' className="strong">{"< Voltar"}</Link>
 
         <h1 className="text-[#22577A] font-bold text-3xl text-center">{data.title}</h1>
 
