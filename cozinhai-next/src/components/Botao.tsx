@@ -14,7 +14,7 @@ export default function Botao({ texto, destino, fontSize }: botaoProps) {
       href={destino}
     >
       <div
-        className={`text-white flex flex-row justify-between gap-2 items-center ${styles.buttonContent}`}
+        className={`text-white flex flex-row justify-between gap-2 items-center buttonContent`}
         style={fontSize ? { fontSize } : undefined}
       >
         <p>{texto}</p>

@@ -83,7 +83,7 @@ export default function Home() {
     <div className="bg-[#FFFFFF] min-h-screen w-full">
       <Header />
       <div
-        className={`flex flex-col items-center justify-center gap-20 px-4 py-16 sm:px-6 ${styles.main}`}
+        className={`flex flex-col items-center justify-center gap-20 px-4 py-16 sm:px-6 main`}
       >
         <div className="relative w-[12rem] aspect-[3/1]">
   <Image
@@ -99,20 +99,20 @@ export default function Home() {
             Pesquise seus ingredientes
           </h1>
           <div
-            className={`flex w-full max-w-xs sm:max-w-md items-center border-2 border-[#22577A] rounded-xl px-3 ${styles.inputContainer}`}
+            className={`flex w-full max-w-xs sm:max-w-md items-center border-2 border-[#22577A] rounded-xl px-3 inputContainer`}
           >
             <input
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               type="text"
               placeholder="Busque um ingrediente"
-              className={`flex-grow bg-transparent py-2 text-black font-alexandria text-sm sm:text-base ${styles.input}`}
+              className={`flex-grow bg-transparent py-2 text-black font-alexandria text-sm sm:text-base input`}
             />
 
             <button onClick={handleIngredient}>
               <img
                 src="/images/addIcon.svg"
-                className={`w-4 sm:w-5 ${styles.lupaIcon}`}
+                className={`w-4 sm:w-5 lupaIcon`}
               />
             </button>
           </div>
