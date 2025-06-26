@@ -12,7 +12,7 @@ type Recipe = {
   image: string;
 };
 
-export const apiKey = "c2fa6379e95a44b1b915074a2b020428"; //posteriormente ligar com o arquivo .env
+export const apiKey = process.env.NEXT_PUBLIC_SPOONACULAR_API_KEY; //posteriormente ligar com o arquivo .env
 
 export default function RecipeResults() {
   const searchParams = useSearchParams();
